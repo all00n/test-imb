@@ -13,13 +13,13 @@ class Price {
     }
 
     public function getProduct() {
-      $sql = "select pro.title, pro.description, dpb.doc_id, dp.datetime as `date`, CASE WHEN dp.status <> '0' THEN dpb.price ELSE NULL END as price from
-              (SELECT t1.* FROM doc_price_body t1,
+      $sql = "SELECT pro.title, pro.description, dpb.doc_id, dp.datetime AS `date`, CASE WHEN dp.status <> '0' THEN dpb.price ELSE NULL END AS price
+              FROM product pro
+              JOIN (SELECT t1.* FROM doc_price_body t1,
               (SELECT product_id, MAX(doc_id) doc_id FROM doc_price_body GROUP BY product_id) t2
-              WHERE t1.product_id=t2.product_id AND t1.doc_id=t2.doc_id) as dpb
-              join product pro on dpb.product_id=pro.id
-              join doc_price dp on dp.id=dpb.doc_id
-              where pro.status<>'1' and dp.datetime between '2018-09-12 00:00:00' and '2018-09-12 23:59:59'";
+              WHERE t1.product_id=t2.product_id AND t1.doc_id=t2.doc_id) AS dpb ON dpb.product_id=pro.id
+              JOIN doc_price dp ON dp.id=dpb.doc_id
+              WHERE pro.status<>'1' AND dp.datetime <= '2018-09-14 23:59:59'";
       $result = $this->dbh->query($sql);
       return $result->fetchAll(PDO::FETCH_ASSOC);
     }
